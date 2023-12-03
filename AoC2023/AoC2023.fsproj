@@ -8,7 +8,9 @@
     <ItemGroup>
         <Compile Include="Program.fs" />
         <Content Include="inputs\01.txt" />
+        <Content Include="inputs\02.txt" />
         <None Include="01.fsx" />
+        <None Include="02.fsx" />
     </ItemGroup>
 
 </Project>
