@@ -25,6 +25,7 @@ let getMap which sections =
         sections
     |> Array.tail
     |> Array.map (fun l -> l.Split(" ") |> Array.map uint)
+    |> List.ofArray
 
 type OverlapResult =
     { Overlap: uint array
@@ -42,36 +43,65 @@ let overlaps (haystack: uint array) (needle: uint array) =
         { Overlap = haystack
           Others = [ [| nl; hl - nl |]; [| hr; nr - hr |] ] }
         |> Some
-    elif (nl < hl && nr >= hl) then
+    elif (nl < hl && nr > hl) then
         { Overlap = [| hl; nr - hl |]
           Others = [ [| nl; hl - nl |] ] }
         |> Some
-    elif (nl < hr && nr >= hr) then
+    elif (nr >= hr && nl < hr) then
         { Overlap = [| nl; hr - nl |]
           Others = [ [| hr; nr - hr |] ] }
         |> Some
     else
         None
 
+let addDefaults (startSeed: uint) (endSeed: uint) (dests: uint array list) =
+    let mutable sorted = dests |> List.sortBy (fun d -> d[0])
+    let mutable toAdd: uint array list = []
+    let mutable current = sorted
+    let mutable previous = startSeed
 
-
+    while previous < endSeed do
+        match current with
+        | [] ->
+            toAdd <- [| previous; endSeed - previous |]::toAdd
+            previous <- endSeed
+        | head::tail ->
+            current <- tail
+            match head[0] with
+            | m when m > previous ->
+                toAdd <- [| previous; m - previous |]::toAdd
+            | _ -> 
+                ()
+            previous <- head[0] + head[1]
+    
+    List.append dests toAdd |> List.sortBy (fun d -> d[0])
+    
 let getDest (map: uint array list) (sources: uint array list) =
-    let mutable currentSources = sources
+    let sorted = sources |> List.sortBy (fun s -> s[0])
+    let mutable currentSources = sorted
     let mutable (destinations: uint array list) = []
 
     while currentSources |> List.isEmpty |> not do
+        printfn "%A" currentSources
+
         let source :: tail = currentSources
         currentSources <- tail
-
+        
         map
         |> List.iter (fun mapping ->
+            printfn "%A %A" mapping source
             match overlaps (Array.sub mapping 1 2) source with
             | None -> ()
             | Some(result) ->
-                destinations <- result.Overlap::destinations
+                let destRange = [| result.Overlap[0] + (mapping[1] - mapping[0]); result.Overlap[1] |]
+                destinations <- destRange::destinations
+                printfn "%A" result                    
                 currentSources <- List.append currentSources result.Others                
                 ())
         
+        
+        
+    destinations |> addDefaults (sorted |> List.head |> Array.item 0) (sorted |> List.last |> Array.reduce (fun l r -> l + r))
         
 
 
@@ -90,8 +120,9 @@ let getClosestLocation (input: string array) =
 
     let locations =
         seeds
-        |> Array.map (fun seed ->
-            seed
+        |> List.ofArray
+        |> List.map (fun seed ->
+            [ seed ]
             |> getDest seedSoil
             |> getDest soilFert
             |> getDest fertWater
@@ -100,6 +131,6 @@ let getClosestLocation (input: string array) =
             |> getDest tempHum
             |> getDest humLoc)
 
-    Array.reduce min locations
+    printfn "%A" locations
 
 "./inputs/05.txt" |> openFile |> getClosestLocation |> printfn "%A"
