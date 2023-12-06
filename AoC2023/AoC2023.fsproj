@@ -12,11 +12,13 @@
         <Content Include="inputs\03.txt" />
         <Content Include="inputs\04.txt" />
         <Content Include="inputs\05.txt" />
+        <Content Include="inputs\06.txt" />
         <None Include="01.fsx" />
         <None Include="02.fsx" />
         <None Include="03.fsx" />
         <None Include="04.fsx" />
         <None Include="05.fsx" />
+        <None Include="06.fsx" />
     </ItemGroup>
 
 </Project>

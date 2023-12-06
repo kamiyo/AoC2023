@@ -14,8 +14,9 @@ let getSeeds sections =
     |> Regex(@"seeds: (.*)").Match
     |> (fun m -> m.Groups[1].Value)
     |> (fun s -> s.Split(" "))
-    |> Array.map uint
+    |> Array.map uint64
     |> Array.chunkBySize 2
+    |> Array.map (fun s -> Array.append s [| s[0] |])
 
 let getMap which sections =
     Array.find
@@ -24,14 +25,14 @@ let getMap which sections =
             regexp.IsMatch(elm[0]))
         sections
     |> Array.tail
-    |> Array.map (fun l -> l.Split(" ") |> Array.map uint)
+    |> Array.map (fun l -> l.Split(" ") |> Array.map uint64)
     |> List.ofArray
 
 type OverlapResult =
-    { Overlap: uint array
-      Others: uint array list }
+    { Overlap: uint64 array
+      Others: uint64 array list }
 
-let overlaps (haystack: uint array) (needle: uint array) =
+let overlaps (haystack: uint64 array) (needle: uint64 array) =
     let hl = haystack[0]
     let hr = haystack[0] + haystack[1]
     let nl = needle[0]
@@ -54,55 +55,51 @@ let overlaps (haystack: uint array) (needle: uint array) =
     else
         None
 
-let addDefaults (startSeed: uint) (endSeed: uint) (dests: uint array list) =
-    let mutable sorted = dests |> List.sortBy (fun d -> d[0])
-    let mutable toAdd: uint array list = []
-    let mutable current = sorted
-    let mutable previous = startSeed
 
-    while previous < endSeed do
-        match current with
-        | [] ->
-            toAdd <- [| previous; endSeed - previous |]::toAdd
-            previous <- endSeed
-        | head::tail ->
-            current <- tail
-            match head[0] with
-            | m when m > previous ->
-                toAdd <- [| previous; m - previous |]::toAdd
-            | _ -> 
-                ()
-            previous <- head[0] + head[1]
-    
-    List.append dests toAdd |> List.sortBy (fun d -> d[0])
-    
-let getDest (map: uint array list) (sources: uint array list) =
+let getDest (map: uint64 array list) (sources: uint64 array list) =
     let sorted = sources |> List.sortBy (fun s -> s[0])
     let mutable currentSources = sorted
-    let mutable (destinations: uint array list) = []
+    let mutable (destinations: uint64 array list) = []
+    printfn "[][][][][]"
 
     while currentSources |> List.isEmpty |> not do
-        printfn "%A" currentSources
+        printfn "sources: %A" currentSources
 
         let source :: tail = currentSources
         currentSources <- tail
-        
+        let mutable alreadyPushed = false
+
         map
-        |> List.iter (fun mapping ->
-            printfn "%A %A" mapping source
-            match overlaps (Array.sub mapping 1 2) source with
-            | None -> ()
-            | Some(result) ->
-                let destRange = [| result.Overlap[0] + (mapping[1] - mapping[0]); result.Overlap[1] |]
-                destinations <- destRange::destinations
-                printfn "%A" result                    
-                currentSources <- List.append currentSources result.Others                
-                ())
-        
-        
-        
-    destinations |> addDefaults (sorted |> List.head |> Array.item 0) (sorted |> List.last |> Array.reduce (fun l r -> l + r))
-        
+        |> List.iteri (fun index mapping ->
+            printfn "--- iter start"
+            printfn "mapping: %A, source: %A" mapping source
+            printfn "dests: %A" destinations
+            printfn "alreadyPushed: %A" alreadyPushed
+
+            match overlaps (Array.sub mapping 1 2) source, alreadyPushed with
+            | None, false when index = (map.Length - 1) -> destinations <- source :: destinations
+            | Some(result), false ->
+                printfn "overlap result: %A" result
+
+                let destRange =
+                    [| result.Overlap[0] + (mapping[0] - mapping[1])
+                       result.Overlap[1]
+                       source[2] + result.Overlap[0] - source[0] |]
+
+                printfn "new dest: %A" destRange
+                destinations <- destRange :: destinations
+
+                let others =
+                    result.Others
+                    |> List.map (fun o -> Array.append o [| source[2] + o[0] - source[0] |])
+
+                currentSources <- List.append currentSources others
+                alreadyPushed <- true
+                ()
+            | _, _ -> ())
+
+    destinations
+
 
 
 let getClosestLocation (input: string array) =
@@ -129,8 +126,11 @@ let getClosestLocation (input: string array) =
             |> getDest waterLight
             |> getDest lightTemp
             |> getDest tempHum
-            |> getDest humLoc)
+            |> getDest humLoc
+            )
+        |> List.reduce List.append
+        |> List.sortBy (fun m -> m[0])
 
-    printfn "%A" locations
+    locations
 
-"./inputs/05.txt" |> openFile |> getClosestLocation |> printfn "%A"
+"./inputs/05.txt" |> openFile |> getClosestLocation |> List.minBy (fun m -> m[0]) |> printfn "%A"
