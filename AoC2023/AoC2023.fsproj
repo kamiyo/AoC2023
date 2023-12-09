@@ -12,6 +12,7 @@
         <Content Include="inputs\03.txt" />
         <Content Include="inputs\04.txt" />
         <Content Include="inputs\05.txt" />
+        <Content Include="inputs\08.txt" />
         <Content Include="inputs\06.txt" />
         <Content Include="inputs\07.txt" />
         <None Include="01.fsx" />
@@ -21,6 +22,7 @@
         <None Include="05.fsx" />
         <None Include="06.fsx" />
         <None Include="07.fsx" />
+        <None Include="08.fsx" />
     </ItemGroup>
 
 </Project>

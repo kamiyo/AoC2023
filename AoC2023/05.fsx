@@ -60,10 +60,10 @@ let getDest (map: uint64 array list) (sources: uint64 array list) =
     let sorted = sources |> List.sortBy (fun s -> s[0])
     let mutable currentSources = sorted
     let mutable (destinations: uint64 array list) = []
-    printfn "[][][][][]"
+    // printfn "[][][][][]"
 
     while currentSources |> List.isEmpty |> not do
-        printfn "sources: %A" currentSources
+        // printfn "sources: %A" currentSources
 
         let source :: tail = currentSources
         currentSources <- tail
@@ -71,22 +71,22 @@ let getDest (map: uint64 array list) (sources: uint64 array list) =
 
         map
         |> List.iteri (fun index mapping ->
-            printfn "--- iter start"
-            printfn "mapping: %A, source: %A" mapping source
-            printfn "dests: %A" destinations
-            printfn "alreadyPushed: %A" alreadyPushed
+            // printfn "--- iter start"
+            // printfn "mapping: %A, source: %A" mapping source
+            // printfn "dests: %A" destinations
+            // printfn "alreadyPushed: %A" alreadyPushed
 
             match overlaps (Array.sub mapping 1 2) source, alreadyPushed with
             | None, false when index = (map.Length - 1) -> destinations <- source :: destinations
             | Some(result), false ->
-                printfn "overlap result: %A" result
+                // printfn "overlap result: %A" result
 
                 let destRange =
                     [| result.Overlap[0] + (mapping[0] - mapping[1])
                        result.Overlap[1]
                        source[2] + result.Overlap[0] - source[0] |]
 
-                printfn "new dest: %A" destRange
+                // printfn "new dest: %A" destRange
                 destinations <- destRange :: destinations
 
                 let others =
