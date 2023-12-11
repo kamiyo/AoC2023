@@ -33,15 +33,32 @@ let listOfPoints =
     |> Array.reduce Array.append
     |> Array.map fst
     |> List.ofArray
-    
+
 let pairs = makePairs listOfPoints []
+let emptyRowsList = emptyRows |> Set.toList
+let emptyColsList = emptyCols |> Set.toList
 
-pairs
-|> List.map (fun ((ar, ac), (br, bc)) ->
-                let rMin, rMax = if br - ar < 0 then br, ra else ar, br
-                let cMin, cMax = if bc - ac < 0 then bc, ac else ac, bc
-                
-                    )
+let distances =
+    pairs
+    |> List.map (fun ((ar, ac), (br, bc)) ->
+        let rMin, rMax = if br - ar < 0 then br, ar else ar, br
+        let cMin, cMax = if bc - ac < 0 then bc, ac else ac, bc
 
-printfn "%A" pairs
-printfn "%A %A" emptyRows emptyCols
+        let numEmptyRows =
+            emptyRowsList
+            |> List.filter (fun row -> row > rMin && row < rMax)
+            |> List.length
+            |> uint64
+
+        let numEmptyCols =
+            emptyColsList
+            |> List.filter (fun col -> col > cMin && col < cMax)
+            |> List.length
+            |> uint64
+
+        ((rMax - rMin) |> uint64)
+        + ((cMax - cMin) |> uint64)
+        + ((999999UL) * numEmptyCols)
+        + ((999999UL) * numEmptyRows))
+
+printfn "%A" (distances |> List.reduce (fun l r -> l + r))
