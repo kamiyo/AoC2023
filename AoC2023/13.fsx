@@ -1,19 +1,27 @@
 ﻿open System
 open System.IO
 
-let rec rotateStringArray (map: string array) (length: int) (depth: int) =
+let rec rotateStringArray (map: char array array) (length: int) (depth: int) =
     match depth with
     | x when x = length -> []
-    | x ->
-        (map |> Array.map (fun s -> s.Substring(x, 1)) |> (fun sa -> String.Join("", sa)))
-        :: (rotateStringArray map length (depth + 1))
+    | x -> (map |> Array.map (fun s -> s[x])) :: (rotateStringArray map length (depth + 1))
 
-let findAxis (map: string array) =
+let findAxis (map: char array array) =
     let main = map[.. (map.Length - 2)] |> Array.indexed
     let shifted = map[1..]
 
     let axis =
-        Array.fold2 (fun state (idx, main) shifted -> if main = shifted then idx :: state else state) [] main shifted
+        Array.fold2
+            (fun state (idx, main') shifted' ->
+                if Array.forall2 (fun l r -> l = r) main' shifted' then
+                    idx :: state
+                elif Array.map2 (fun l r -> l = r) main' shifted' |> Array.filter not |> Array.length = 1 then
+                    idx :: state
+                else
+                    state)
+            []
+            main
+            shifted
     // Check all other ones
     axis
     |> List.filter (fun a ->
@@ -28,7 +36,16 @@ let findAxis (map: string array) =
 
         reflected |> Array.Reverse
         // printfn "%A %A" original reflected
-        Array.forall2 (fun l r -> l = r) original reflected)
+        Array.map2
+            (fun l r ->
+                let discrepancies =
+                    Array.map2 (fun l' r' -> l' = r') l r |> Array.filter not |> Array.length
+
+                discrepancies)
+            original
+            reflected
+        |> Array.sum
+        |> (=) 1)
     |> List.map (fun a -> a + 1)
 
 
@@ -39,7 +56,9 @@ type Axis =
 let maps =
     "./inputs/13.txt"
     |> File.ReadAllLines
-    |> (fun f -> String.Join("\n", f).Split("\n\n") |> Array.map (fun m -> m.Split("\n")))
+    |> (fun f ->
+        String.Join("\n", f).Split("\n\n")
+        |> Array.map (fun m -> m.Split("\n") |> Array.map (fun s -> s.ToCharArray())))
     |> Array.map (fun m ->
         match findAxis m with
         | [] ->

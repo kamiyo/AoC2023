@@ -108,32 +108,26 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Kamiyo\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\kamiy\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Programming\\AoC2023\\AoC2023\\AoC2023.fsproj",
+      "projectUniqueName": "C:\\Users\\kamiy\\Documents\\Programming\\AoC2023\\AoC2023\\AoC2023.fsproj",
       "projectName": "AoC2023",
-      "projectPath": "C:\\Programming\\AoC2023\\AoC2023\\AoC2023.fsproj",
-      "packagesPath": "C:\\Users\\Kamiyo\\.nuget\\packages\\",
-      "outputPath": "C:\\Programming\\AoC2023\\AoC2023\\obj\\",
+      "projectPath": "C:\\Users\\kamiy\\Documents\\Programming\\AoC2023\\AoC2023\\AoC2023.fsproj",
+      "packagesPath": "C:\\Users\\kamiy\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kamiy\\Documents\\Programming\\AoC2023\\AoC2023\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Kamiyo\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "C:\\Users\\kamiy\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "C:\\Program Files\\dotnet\\sdk\\7.0.311\\FSharp\\library-packs": {},
-        "https://www.nuget.org/api/v2/": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net7.0": {

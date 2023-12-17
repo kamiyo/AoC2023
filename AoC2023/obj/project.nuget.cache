@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "+hVca1mvr3Oin6b+7LGgwZN8Q4Sab7woX+yvdvuc5Z5moQKT+IgLI0rSufUVoFmF7SbAhqdjqUYcgcbQIUhswQ==",
+  "dgSpecHash": "tgjwg8f6HbwroMB+RhsgEQnjfYiMTxpPoobkbziFoN+8iUxV+MXnjQyveTQoeUo7dVpZgkbo6pJAOmPTJQ7GHg==",
   "success": true,
-  "projectFilePath": "C:\\Programming\\AoC2023\\AoC2023\\AoC2023.fsproj",
+  "projectFilePath": "C:\\Users\\kamiy\\Documents\\Programming\\AoC2023\\AoC2023\\AoC2023.fsproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Kamiyo\\.nuget\\packages\\fsharp.core\\7.0.300\\fsharp.core.7.0.300.nupkg.sha512"
+    "C:\\Users\\kamiy\\.nuget\\packages\\fsharp.core\\7.0.300\\fsharp.core.7.0.300.nupkg.sha512"
   ],
   "logs": []
 }
